@@ -16,22 +16,24 @@
 
 package org.uberfire.shared.events;
 
+import org.uberfire.shared.model.Folder;
+import org.uberfire.shared.model.Task;
+
 public class TaskDone {
 
-    private final String project;
-    private final String folder;
-    private final String task;
+    private final Task task;
+    private final Folder folder;
 
-    public TaskDone( String project,
-                     String folder,
-                     String task ) {
-
-        this.project = project;
+    public TaskDone(Folder folder, Task task) {
         this.folder = folder;
-        this.task = task;
+       this.task = task;
     }
 
-    public String getProject() {
-        return project;
+    public Task getTask() {
+        return task;
+    }
+    
+    public Folder getFolder() {
+        return folder;
     }
 }

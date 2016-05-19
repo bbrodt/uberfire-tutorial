@@ -16,12 +16,13 @@
 
 package org.uberfire.shared.model;
 
-public class Project {
+public class Project extends TreeNode<Project, Folder> {
 
     private final String name;
     private boolean selected;
 
-    public Project( String name ) {
+    public Project(String name) {
+        // this is the root of the tree so it has no parent
         this.name = name;
         this.selected = false;
     }
@@ -34,7 +35,27 @@ public class Project {
         return selected;
     }
 
-    public void setSelected( boolean selected ) {
+    public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+    
+    public int countDoneTasks() {
+        int doneTasks = 0;
+        for (Folder folder : getChildren()) {
+            for (Task task : folder.getChildren()) {
+                if (task.isDone()) {
+                    ++doneTasks;
+                }
+            }
+        }
+        return doneTasks;
+    }
+    
+    public int countTotalTasks() {
+        int totalTasks = 0;
+        for (Folder folder : getChildren()) {
+            totalTasks += folder.getChildren().size();
+        }
+        return totalTasks;
     }
 }

@@ -19,21 +19,23 @@ package org.uberfire.client.screens;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.LinkedGroupItem;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.shared.model.Project;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Composite;
 
 @Dependent
 @Templated
 public class ProjectsView extends Composite implements ProjectsPresenter.View {
 
     private ProjectsPresenter presenter;
+    protected static final String EMPTY = "";
 
     @Inject
     @DataField("new-project")
@@ -41,36 +43,46 @@ public class ProjectsView extends Composite implements ProjectsPresenter.View {
 
     @Inject
     @DataField("projects")
-    LinkedGroup projects;
+    LinkedGroup projectsGroup;
+
+    public class ProjectItem extends LinkedGroupItem {
+        Project project;
+
+        public ProjectItem(Project project) {
+            this.project = project;
+            setText(project.getName());
+        }
+
+        public Project getProject() {
+            return project;
+        }
+    }
 
     @Override
-    public void init( ProjectsPresenter presenter ) {
+    public void init(ProjectsPresenter presenter) {
         this.presenter = presenter;
     }
-
+    
     @Override
     public void clearProjects() {
-        projects.clear();
+        projectsGroup.clear();
     }
 
     @Override
-    public void addProject( final String projectName,
-                            final boolean active ) {
-        final LinkedGroupItem projectItem = createProjectItems( projectName, active );
-        projects.add( projectItem );
+    public void addProject(final Project project, final boolean active) {
+        final LinkedGroupItem projectItem = createProjectItem(project, active);
+        projectsGroup.add(projectItem);
     }
 
-    private LinkedGroupItem createProjectItems( final String projectName,
-                                                final boolean active ) {
-        final LinkedGroupItem projectItem = GWT.create( LinkedGroupItem.class );
-        projectItem.setText( projectName );
-        projectItem.setActive( active );
-        projectItem.addClickHandler( ( event ) -> presenter.selectProject( projectName ) );
+    private ProjectItem createProjectItem(final Project project, final boolean active) {
+        final ProjectItem projectItem = new ProjectItem(project);
+        projectItem.setActive(active);
+        projectItem.addClickHandler((event) -> presenter.selectProject(projectItem.getProject()));
         return projectItem;
     }
 
     @EventHandler("new-project")
-    public void newProject( ClickEvent event ) {
+    public void newProject(ClickEvent event) {
         presenter.newProject();
     }
 }

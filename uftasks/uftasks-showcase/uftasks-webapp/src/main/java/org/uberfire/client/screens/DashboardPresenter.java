@@ -16,19 +16,16 @@
 
 package org.uberfire.client.screens;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.shared.events.TaskCreated;
-import org.uberfire.shared.events.TaskDone;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
+import org.uberfire.shared.model.Project;
+import org.uberfire.shared.model.TasksRoot;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "DashboardPresenter")
@@ -36,9 +33,7 @@ public class DashboardPresenter {
 
     public interface View extends UberView<DashboardPresenter> {
 
-        void addProject( String project,
-                         String tasksCreated,
-                         String tasksDone );
+        void addProject(Project project, String tasksCreated, String tasksDone);
 
         void clear();
     }
@@ -46,7 +41,8 @@ public class DashboardPresenter {
     @Inject
     private View view;
 
-    private Map<String, ProjectTasksCounter> projectTasksCounter = new HashMap<String, ProjectTasksCounter>();
+    @Inject
+    private TasksRoot tasksRoot;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -65,51 +61,10 @@ public class DashboardPresenter {
 
     private void updateView() {
         view.clear();
-        for ( String project : projectTasksCounter.keySet() ) {
-            ProjectTasksCounter projectTasksCounter = this.projectTasksCounter.get( project );
-            view.addProject( project, projectTasksCounter.getTasksCreated(), projectTasksCounter.getTasksDone() );
-        }
-    }
-
-    public void taskCreated( @Observes TaskCreated taskCreated ) {
-        ProjectTasksCounter projectTasksCounter = getProjectTasksCounter( taskCreated.getProject() );
-        projectTasksCounter.taskCreated();
-    }
-
-    public void taskDone( @Observes TaskDone taskDone ) {
-        ProjectTasksCounter projectTasksCounter = getProjectTasksCounter( taskDone.getProject() );
-        projectTasksCounter.taskDone();
-    }
-
-    public ProjectTasksCounter getProjectTasksCounter( String projectName ) {
-        ProjectTasksCounter projectTasksCounter = this.projectTasksCounter.get( projectName );
-        if ( projectTasksCounter == null ) {
-            projectTasksCounter = new ProjectTasksCounter();
-            this.projectTasksCounter.put( projectName, projectTasksCounter );
-        }
-        return projectTasksCounter;
-    }
-
-    private class ProjectTasksCounter {
-
-        int tasksDone;
-        int tasksCreated;
-
-        public void taskDone() {
-            tasksDone++;
-            tasksCreated--;
-        }
-
-        public void taskCreated() {
-            tasksCreated++;
-        }
-
-        public String getTasksDone() {
-            return String.valueOf( tasksDone );
-        }
-
-        public String getTasksCreated() {
-            return String.valueOf( tasksCreated );
+        for (Project project : tasksRoot.getProjects()) {
+            int done = project.countDoneTasks();
+            int notDone = project.countTotalTasks() - done;
+            view.addProject(project, notDone+"", done+"");
         }
     }
 }

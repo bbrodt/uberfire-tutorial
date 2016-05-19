@@ -16,10 +16,8 @@
 
 package org.uberfire.client.screens;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -30,10 +28,14 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewFolderPresenter;
+import org.uberfire.shared.events.FolderCreated;
+import org.uberfire.shared.events.FolderRemoved;
 import org.uberfire.shared.events.ProjectSelectedEvent;
 import org.uberfire.shared.events.TaskCreated;
 import org.uberfire.shared.events.TaskDone;
 import org.uberfire.shared.model.Folder;
+import org.uberfire.shared.model.Project;
+import org.uberfire.shared.model.Task;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "TasksPresenter")
@@ -45,9 +47,7 @@ public class TasksPresenter {
 
         void clearTasks();
 
-        void newFolder( String name,
-                        Integer size,
-                        List<String> strings );
+        void newFolder(Folder folder);
     }
 
     @Inject
@@ -61,10 +61,14 @@ public class TasksPresenter {
 
     @Inject
     private Event<TaskDone> taskDoneEvent;
+    
+    @Inject
+    private Event<FolderCreated> folderCreatedEvent;
 
-    private String currentSelectedProject;
+    @Inject
+    private Event<FolderRemoved> folderRemovedEvent;
 
-    private Map<String, List<Folder>> foldersPerProject = new HashMap<String, List<Folder>>();
+    private Project currentSelectedProject;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -76,8 +80,8 @@ public class TasksPresenter {
         return view;
     }
 
-    public void projectSelected( @Observes ProjectSelectedEvent projectSelectedEvent ) {
-        this.currentSelectedProject = projectSelectedEvent.getName();
+    public void projectSelected(@Observes ProjectSelectedEvent projectSelectedEvent) {
+        currentSelectedProject = projectSelectedEvent.getProject();
         selectFolder();
     }
 
@@ -87,58 +91,37 @@ public class TasksPresenter {
     }
 
     public void showNewFolder() {
-        newFolderPresenter.show( this );
-    }
-
-    private Folder getFolder( String folderName ) {
-        for ( final Folder folder : getFolders() ) {
-            if ( folder.getName().equalsIgnoreCase( folderName ) ) {
-                return folder;
-            }
-        }
-        return null;
+        newFolderPresenter.show(this);
     }
 
     private List<Folder> getFolders() {
-        List<Folder> folders = foldersPerProject.get( currentSelectedProject );
-        if ( folders == null ) {
-            folders = new ArrayList<Folder>();
-        }
-        return folders;
+        return currentSelectedProject.getChildren();
     }
 
     private void updateView() {
         view.clearTasks();
-        for ( final Folder folder : getFolders() ) {
-            view.newFolder( folder.getName(), folder.getTasks().size(), folder.getTasks() );
+        for (final Folder folder : getFolders()) {
+            view.newFolder(folder);
         }
     }
 
-    public void newFolder( String folderName ) {
-        List<Folder> folders = getFolders();
-        folders.add( new Folder( folderName ) );
-        foldersPerProject.put( currentSelectedProject, folders );
+    public void newFolder(String folderName) {
+        folderCreatedEvent.fire(new FolderCreated(new Folder(folderName)));
         updateView();
     }
 
-    public void doneTask( String folderName,
-                          String taskText ) {
-        Folder folder = getFolder( folderName );
-        if ( folder != null ) {
-            folder.removeTask( taskText );
-        }
-        taskDoneEvent.fire( new TaskDone(currentSelectedProject,folderName, taskText) );
+    public void removeFolder(Folder folder) {
+        folderRemovedEvent.fire(new FolderRemoved(folder));
+        updateView();
+    }
+    
+    public void doneTask(Task task) {
+        taskDoneEvent.fire(new TaskDone(task.getParent(), task));
         updateView();
     }
 
-    public void createTask( String folderName,
-                            String task ) {
-
-        Folder folder = getFolder( folderName );
-        if ( folder != null ) {
-            folder.addTask( task );
-        }
-        taskCreatedEvent.fire( new TaskCreated(currentSelectedProject,folderName, task) );
+    public void createTask(Folder folder, Task task) {
+        taskCreatedEvent.fire(new TaskCreated(folder, task));
         updateView();
     }
 }

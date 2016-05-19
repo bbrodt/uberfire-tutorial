@@ -16,15 +16,17 @@
 
 package org.uberfire.shared.events;
 
+import org.uberfire.shared.model.Project;
+
 public class ProjectSelectedEvent {
 
-    private final String name;
+    private final Project project;
 
-    public ProjectSelectedEvent( String name ) {
-        this.name = name;
+    public ProjectSelectedEvent(Project project) {
+        this.project = project;
     }
 
-    public String getName() {
-        return name;
+    public Project getProject() {
+        return project;
     }
 }

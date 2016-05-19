@@ -16,20 +16,26 @@
 
 package org.uberfire.client.screens;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.Window;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewProjectPresenter;
+import org.uberfire.shared.events.FolderCreated;
+import org.uberfire.shared.events.FolderRemoved;
 import org.uberfire.shared.events.ProjectSelectedEvent;
+import org.uberfire.shared.events.TaskCreated;
+import org.uberfire.shared.events.TaskDone;
+import org.uberfire.shared.model.Folder;
 import org.uberfire.shared.model.Project;
+import org.uberfire.shared.model.Task;
+import org.uberfire.shared.model.TasksRoot;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "ProjectsPresenter")
@@ -39,8 +45,7 @@ public class ProjectsPresenter {
 
         void clearProjects();
 
-        void addProject( String projectName,
-                         boolean selected );
+        void addProject(Project project, boolean selected);
     }
 
     @Inject
@@ -52,8 +57,10 @@ public class ProjectsPresenter {
     @Inject
     private Event<ProjectSelectedEvent> projectSelectedEvent;
 
-    private List<Project> projects = new ArrayList<Project>();
+    private TasksRoot tasksRoot = new TasksRoot();
 
+    private Project activeProject = null;
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Projects";
@@ -64,33 +71,69 @@ public class ProjectsPresenter {
         return view;
     }
 
-    public void newProject() {
-        newProjectPresenter.show( this );
+    @Produces
+    public TasksRoot tasksRoot() {
+        return tasksRoot;
+    }
+    
+    public void taskCreated(@Observes TaskCreated taskCreated) {
+        if (activeProject!=null) {
+            Folder folder = taskCreated.getFolder();
+            Task task = taskCreated.getTask();
+            folder.addChild(task);
+            updateView();
+        }
     }
 
-    public void createNewProject( String projectName ) {
-        projects.add( new Project( projectName ) );
+    public void taskDone(@Observes TaskDone taskDone) {
+        Task task = taskDone.getTask();
+        task.setDone(true);
+        updateView();
+    }
+
+    public void folderCreated(@Observes FolderCreated folderCreated) {
+        if (activeProject!=null) {
+            activeProject.addChild(folderCreated.getFolder());
+            updateView();
+        }
+    }
+
+    public void folderRemoved(@Observes FolderRemoved folderRemoved) {
+        if (activeProject!=null) {
+            activeProject.removeChild(folderRemoved.getFolder());
+            updateView();
+        }
+    }
+    
+    public void newProject() {
+        newProjectPresenter.show(this);
+    }
+
+    public void createNewProject(String projectName) {
+        tasksRoot.getProjects().add(new Project(projectName));
         updateView();
     }
 
     private void updateView() {
         view.clearProjects();
-        for ( Project project : projects ) {
-            view.addProject( project.getName(), project.isSelected() );
+        for (Project project : tasksRoot.getProjects()) {
+            view.addProject(project, project.isSelected());
         }
     }
 
-    public void selectProject( String projectName ) {
-        setActiveProject( projectName );
-        projectSelectedEvent.fire( new ProjectSelectedEvent( projectName ) );
+    public void selectProject(Project project) {
+        setActiveProject(project);
+        projectSelectedEvent.fire(new ProjectSelectedEvent(project));
     }
 
-    private void setActiveProject( String projectName ) {
-        for ( Project project : projects ) {
-            if ( projectName.equalsIgnoreCase( project.getName() ) ) {
-                project.setSelected( true );
-            } else {
-                project.setSelected( false );
+    private void setActiveProject(Project project) {
+        activeProject = project;
+        for (Project p : tasksRoot.getProjects()) {
+            if (p == project) {
+                p.setSelected(true);
+            }
+            else {
+                p.setSelected(false);
             }
         }
         updateView();
