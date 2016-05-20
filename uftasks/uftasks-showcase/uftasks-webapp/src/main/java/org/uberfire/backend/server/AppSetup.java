@@ -16,7 +16,6 @@
 
 package org.uberfire.backend.server;
 
-import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -33,21 +32,13 @@ import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 @Startup
 public class AppSetup {
 
-    private static final String PLAYGROUND_ORIGIN = "https://github.com/guvnorngtestuser1/guvnorng-playground.git";
-    private static final String PLAYGROUND_UID = "guvnorngtestuser1";
-
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
 
     @PostConstruct
-    public void assertPlayground() {
+    public void init() {
         try {
-//            ioService.newFileSystem( URI.create( "default://uf-playground" ), new HashMap<String, Object>() {{
-//                put( "origin", PLAYGROUND_ORIGIN );
-//                put( "username", PLAYGROUND_UID );
-//            }} );
-            
             ioService.newFileSystem( URI.create("default://uftasks"),  new HashMap<String, Object>() {{}} );
             
         } catch ( final FileSystemAlreadyExistsException ignore ) {

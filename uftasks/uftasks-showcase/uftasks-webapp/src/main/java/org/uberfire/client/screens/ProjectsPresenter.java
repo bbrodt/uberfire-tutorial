@@ -21,6 +21,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -57,6 +58,8 @@ public class ProjectsPresenter {
     @Inject
     private Event<ProjectSelectedEvent> projectSelectedEvent;
 
+    @Produces
+    @Named("tasksRoot")
     private TasksRoot tasksRoot = new TasksRoot();
 
     private Project activeProject = null;

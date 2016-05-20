@@ -27,6 +27,8 @@ import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.shared.model.Project;
 import org.uberfire.shared.model.TasksRoot;
 
+import javax.inject.Named;
+
 @ApplicationScoped
 @WorkbenchScreen(identifier = "DashboardPresenter")
 public class DashboardPresenter {
@@ -42,6 +44,7 @@ public class DashboardPresenter {
     private View view;
 
     @Inject
+    @Named("tasksRoot")
     private TasksRoot tasksRoot;
 
     @WorkbenchPartTitle
