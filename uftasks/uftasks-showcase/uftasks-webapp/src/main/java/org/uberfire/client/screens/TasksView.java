@@ -32,8 +32,8 @@ import org.gwtbootstrap3.client.ui.constants.ListGroupItemType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.shared.model.Folder;
-import org.uberfire.shared.model.Task;
+import org.uberfire.component.model.Folder;
+import org.uberfire.component.model.Task;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

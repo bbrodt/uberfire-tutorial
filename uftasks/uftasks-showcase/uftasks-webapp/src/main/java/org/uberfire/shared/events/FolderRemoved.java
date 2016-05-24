@@ -16,7 +16,7 @@
 
 package org.uberfire.shared.events;
 
-import org.uberfire.shared.model.Folder;
+import org.uberfire.component.model.Folder;
 
 public class FolderRemoved {
 

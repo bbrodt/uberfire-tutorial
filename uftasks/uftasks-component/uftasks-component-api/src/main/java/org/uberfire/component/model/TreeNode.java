@@ -1,9 +1,12 @@
-package org.uberfire.shared.model;
+package org.uberfire.component.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class TreeNode<PARENT extends TreeNode, CHILD extends TreeNode> {
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+@Portable
+public class TreeNode<PARENT extends TreeNode, CHILD extends TreeNode> {
     private PARENT parent;
     private List<CHILD> children;
 
@@ -11,13 +14,15 @@ public abstract class TreeNode<PARENT extends TreeNode, CHILD extends TreeNode> 
         parent = null;
     }
 
-    abstract public String getName();
+    public String getName() {
+        return "noname";
+    }
 
     public PARENT getParent() {
         return (PARENT) parent;
     }
 
-    protected void setParent(PARENT parent) {
+    public void setParent(PARENT parent) {
         this.parent = parent;
     }
 

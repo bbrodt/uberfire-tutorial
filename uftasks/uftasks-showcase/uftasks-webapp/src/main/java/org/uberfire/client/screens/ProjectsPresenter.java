@@ -27,31 +27,23 @@ import javax.inject.Named;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.backend.vfs.PathFactory;
-import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewProjectPresenter;
+import org.uberfire.component.model.Folder;
+import org.uberfire.component.model.Project;
+import org.uberfire.component.model.Task;
+import org.uberfire.component.model.TasksRoot;
+import org.uberfire.component.service.UFTasksService;
 import org.uberfire.shared.events.FolderCreated;
 import org.uberfire.shared.events.FolderRemoved;
 import org.uberfire.shared.events.ProjectSelectedEvent;
 import org.uberfire.shared.events.TaskCreated;
 import org.uberfire.shared.events.TaskDone;
-import org.uberfire.shared.model.Folder;
-import org.uberfire.shared.model.Project;
-import org.uberfire.shared.model.Task;
-import org.uberfire.shared.model.TasksRoot;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONBoolean;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "ProjectsPresenter")
@@ -63,7 +55,6 @@ public class ProjectsPresenter {
 
         void addProject(Project project, boolean selected);
     }
-    private final static String DEFAULT_URI = "default://uftasks";
 
     @Inject
     private View view;
@@ -78,8 +69,8 @@ public class ProjectsPresenter {
     private User user;
 
     @Inject
-    protected Caller<VFSService> vfsServices;
-
+    Caller<UFTasksService> ufTasksService;
+    
     private TasksRoot tasksRoot = new TasksRoot();
 
     private Project activeProject = null;
@@ -106,81 +97,25 @@ public class ProjectsPresenter {
     }
 
     private void loadTasksRoot() {
-        String filename = "tasks.json";
-        String uri = DEFAULT_URI + "/" + user.getIdentifier() + "/" + filename;
-        Path path = PathFactory.newPath(filename, uri);
-
-        vfsServices.call(new RemoteCallback<String>() {
+        ufTasksService.call(new RemoteCallback<TasksRoot>() {
             @Override
-            public void callback(final String response) {
-                TasksRoot newRoot = new TasksRoot();
-                JSONObject tasksRootJson = JSONParser.parseStrict(response).isObject();
-                JSONArray projectsJson = tasksRootJson.get("projects").isArray();
-                for (int pi=0; pi<projectsJson.size(); ++pi) {
-                    JSONObject pj = projectsJson.get(pi).isObject();
-                    Project p = new Project(pj.get("name").isString().stringValue());
-                    JSONArray foldersJson = pj.get("folders").isArray();
-                    for (int fi=0; fi<foldersJson.size(); ++fi) {
-                        JSONObject fj = foldersJson.get(fi).isObject();
-                        Folder f = new Folder(fj.get("name").isString().stringValue());
-                        JSONArray tasksJson = fj.get("tasks").isArray();
-                        for (int ti=0; ti<tasksJson.size(); ++ti) {
-                            JSONObject tj = tasksJson.get(ti).isObject();
-                            Task t = new Task(tj.get("name").isString().stringValue());
-                            t.setDone(tj.get("isDone").isBoolean().booleanValue());
-                            f.getChildren().add(t);
-                        }
-                        p.getChildren().add(f);
-                    }
-                    newRoot.getProjects().add(p);
-                }
-                tasksRoot = newRoot;
+            public void callback(final TasksRoot response) {
+                if (response!=null)
+                    tasksRoot = response;
+                else 
+                    GWT.log("UFTasksService is unable to load tasks file");
                 updateView();
             }
-        }).readAllString(path);
+        }).load(user.getIdentifier());
     }
     
     private void saveTasksRoot() {
-        JSONObject tasksRootJson = new JSONObject();
-        JSONArray projectsJson = new JSONArray();
-        int pi = 0;
-        for (Project p : tasksRoot.getProjects()) {
-            JSONObject pj = new JSONObject();
-            pj.put("name", new JSONString(p.getName()));
-            
-            JSONArray foldersJson = new JSONArray();
-            int fi = 0;
-            for (Folder f : p.getChildren()) {
-                JSONObject fj = new JSONObject();
-                fj.put("name", new JSONString(f.getName()));
-                foldersJson.set(fi++, fj);
-                
-                JSONArray tasksJson = new JSONArray();
-                int ti = 0;
-                for (Task t : f.getChildren()) {
-                    JSONObject tj = new JSONObject();
-                    tj.put("name", new JSONString(t.getName()));
-                    tj.put("isDone", JSONBoolean.getInstance(t.isDone()));
-                    tasksJson.set(ti++, tj);
-                }
-                fj.put("tasks", tasksJson);
-            }
-            pj.put("folders", foldersJson);
-            projectsJson.set(pi++, pj);
-        }
-        tasksRootJson.put("projects", projectsJson);
-        
-        final String content = tasksRootJson.toString();
-        String filename = "tasks.json";
-        String uri = DEFAULT_URI + "/" + user.getIdentifier() + "/" + filename;
-        Path path = PathFactory.newPath(filename, uri);
-
-        vfsServices.call(new RemoteCallback<Path>() {
+        ufTasksService.call(new RemoteCallback<String>() {
             @Override
-            public void callback(final Path response) {
+            public void callback(final String response) {
                 GWT.log("Write Response: " + response);
             }
-        }).write(path, content);
+        }).save(tasksRoot, user.getIdentifier());
     }
     
     public void taskCreated(@Observes TaskCreated taskCreated) {

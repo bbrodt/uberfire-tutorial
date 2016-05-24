@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.uberfire.shared.model;
+package org.uberfire.component.model;
 
-public class Project extends TreeNode<Project, Folder> {
+import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+@Portable
+public class Project extends TreeNode<TreeNode, Folder> {
 
     private final String name;
     private boolean selected;
 
-    public Project(String name) {
+    public Project(@MapsTo("name") String name) {
         // this is the root of the tree so it has no parent
         this.name = name;
         this.selected = false;

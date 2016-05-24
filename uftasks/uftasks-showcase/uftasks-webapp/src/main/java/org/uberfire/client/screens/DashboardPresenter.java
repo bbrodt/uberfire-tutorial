@@ -23,9 +23,9 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.component.model.Project;
+import org.uberfire.component.model.TasksRoot;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.shared.model.Project;
-import org.uberfire.shared.model.TasksRoot;
 
 import javax.inject.Named;
 

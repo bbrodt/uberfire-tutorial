@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package org.uberfire.shared.model;
+package org.uberfire.component.model;
 
-public class Folder extends TreeNode<Folder, Task> {
+import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+@Portable
+public class Folder extends TreeNode<Project, Task> {
 
     private final String name;
 
-    public Folder(String name) {
+    public Folder(@MapsTo("name") String name) {
         this.name = name;
     }
 

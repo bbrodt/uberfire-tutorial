@@ -28,14 +28,14 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewFolderPresenter;
+import org.uberfire.component.model.Folder;
+import org.uberfire.component.model.Project;
+import org.uberfire.component.model.Task;
 import org.uberfire.shared.events.FolderCreated;
 import org.uberfire.shared.events.FolderRemoved;
 import org.uberfire.shared.events.ProjectSelectedEvent;
 import org.uberfire.shared.events.TaskCreated;
 import org.uberfire.shared.events.TaskDone;
-import org.uberfire.shared.model.Folder;
-import org.uberfire.shared.model.Project;
-import org.uberfire.shared.model.Task;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "TasksPresenter")

@@ -25,7 +25,7 @@ import org.gwtbootstrap3.client.ui.LinkedGroupItem;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.shared.model.Project;
+import org.uberfire.component.model.Project;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;

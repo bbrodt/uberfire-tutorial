@@ -1,10 +1,14 @@
-package org.uberfire.shared.model;
+package org.uberfire.component.model;
 
+import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+@Portable
 public class Task extends TreeNode<Folder, TreeNode> {
     private String name;
     private boolean done;
 
-    public Task(String name) {
+    public Task(@MapsTo("name") String name) {
         this.name = name;
         this.done = false;
     }

@@ -16,7 +16,7 @@
 
 package org.uberfire.shared.events;
 
-import org.uberfire.shared.model.Project;
+import org.uberfire.component.model.Project;
 
 public class ProjectSelectedEvent {
 

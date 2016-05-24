@@ -16,8 +16,8 @@
 
 package org.uberfire.shared.events;
 
-import org.uberfire.shared.model.Folder;
-import org.uberfire.shared.model.Task;
+import org.uberfire.component.model.Folder;
+import org.uberfire.component.model.Task;
 
 public class TaskDone {
 
