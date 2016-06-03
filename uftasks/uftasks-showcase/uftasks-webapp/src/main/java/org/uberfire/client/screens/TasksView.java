@@ -28,6 +28,7 @@ import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.ListGroup;
 import org.gwtbootstrap3.client.ui.ListGroupItem;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ListGroupItemType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -136,10 +137,11 @@ public class TasksView extends Composite implements TasksPresenter.View {
     }
 
     private ListGroupItem generateTask(Task task) {
-        TaskItem tasks = new TaskItem(task);
-        tasks.add(createTaskCheckbox(task));
+        TaskItem taskItem = new TaskItem(task);
+        taskItem.add(createTaskCheckbox(task));
+        taskItem.add(createTaskNotesButton(task));
 
-        return tasks;
+        return taskItem;
     }
 
     private InlineCheckBox createTaskCheckbox(Task task) {
@@ -151,6 +153,15 @@ public class TasksView extends Composite implements TasksPresenter.View {
         return checkBox;
     }
 
+    private Button createTaskNotesButton(Task task) {
+        Button button = GWT.create(Button.class);
+//        button.setText("Notes...");
+        button.setIcon(IconType.EDIT);
+        button.setMarginLeft(20.0);
+        button.addClickHandler(event -> presenter.showTaskEditor(task));
+        return button;
+    }
+    
     @EventHandler("new-folder")
     public void newFolderClick(ClickEvent event) {
         presenter.showNewFolder();

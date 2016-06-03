@@ -28,6 +28,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewFolderPresenter;
+import org.uberfire.client.screens.popup.TaskEditorPresenter;
 import org.uberfire.component.model.Folder;
 import org.uberfire.component.model.Project;
 import org.uberfire.component.model.Task;
@@ -56,6 +57,9 @@ public class TasksPresenter {
     @Inject
     private NewFolderPresenter newFolderPresenter;
 
+    @Inject
+    private TaskEditorPresenter taskEditorPresenter;
+    
     @Inject
     private Event<TaskCreated> taskCreatedEvent;
 
@@ -123,5 +127,9 @@ public class TasksPresenter {
     public void createTask(Folder folder, Task task) {
         taskCreatedEvent.fire(new TaskCreated(folder, task));
         updateView();
+    }
+
+    public void showTaskEditor(Task task) {
+        taskEditorPresenter.show(this);
     }
 }
