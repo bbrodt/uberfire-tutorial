@@ -15,4 +15,17 @@ public class TasksRoot {
     public List<Project> getProjects() {
         return projects;
     }
+    
+    public Task getTask(String id) {
+        for (Project p : projects) {
+            for (Folder f : p.getChildren()) {
+                for (Task t : f.getChildren()) {
+                    if (t.getId().equals(id)) {
+                        return t;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

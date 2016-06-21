@@ -11,7 +11,13 @@
 
   <inherits name="org.uberfire.client.views.PatternFly"/>
 
+  <inherits name="org.jboss.errai.security.Security"/>
   <inherits name="org.uberfire.component.UFTasksComponentClient"/>
+  <inherits name="org.uberfire.UberfireClientAll"/>
+  <inherits name='org.uberfire.ext.editor.commons.UberfireCommonsEditorClient'/>
+  
+  <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
+
   <!-- Specify the paths for translatable code -->
   <source path='client'/>
   <source path='shared'/>

@@ -40,6 +40,7 @@ import org.uberfire.component.service.UFTasksService;
 import org.uberfire.shared.events.FolderCreated;
 import org.uberfire.shared.events.FolderRemoved;
 import org.uberfire.shared.events.ProjectSelectedEvent;
+import org.uberfire.shared.events.TaskChanged;
 import org.uberfire.shared.events.TaskCreated;
 import org.uberfire.shared.events.TaskDone;
 
@@ -131,6 +132,16 @@ public class ProjectsPresenter {
     public void taskDone(@Observes TaskDone taskDone) {
         Task task = taskDone.getTask();
         task.setDone(true);
+        saveTasksRoot();
+        updateView();
+    }
+
+    public void taskChanged(@Observes TaskChanged taskChanged) {
+        Task changedTask = taskChanged.getTask();
+        Task task = tasksRoot.getTask(changedTask.getId());
+        if (task!=null) {
+            task.set(changedTask);
+        }
         saveTasksRoot();
         updateView();
     }

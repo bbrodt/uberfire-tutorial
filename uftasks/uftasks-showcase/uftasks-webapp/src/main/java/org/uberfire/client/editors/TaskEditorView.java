@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.popup;
+package org.uberfire.client.editors;
 
 import java.util.Date;
 
@@ -23,21 +23,25 @@ import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Modal;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.component.model.TaskWithNotes;
+import org.uberfire.ext.editor.commons.client.EditorTitle;
+import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
 @Dependent
@@ -61,13 +65,27 @@ public class TaskEditorView extends Composite
 
     private TaskEditorPresenter presenter;
 
-    private Modal modal;
+    private TaskWithNotes taskWithNotes;
+    
+    protected EditorTitle title = new EditorTitle();
+
+    TextBox nameTextBox;
+    
+    CheckBox doneCheckBox;
     
     RichTextArea notesTextArea;
    
     ListBox priorityListBox;
     
     DatePicker dueDatePicker;
+    
+    @Inject
+    @DataField("task-name")
+    Anchor taskNameAnchor;
+    
+    @Inject
+    @DataField("task-done")
+    Anchor taskDoneAnchor;
     
     @Inject
     @DataField("task-notes")
@@ -92,21 +110,22 @@ public class TaskEditorView extends Composite
     @Inject
     @DataField("cancel-button")
     Button cancelButton;
-
+            
     @Override
     public void init( TaskEditorPresenter presenter ) {
         this.presenter = presenter;
-
-        this.modal = new Modal();
-        final ModalBody body = new ModalBody();
-        body.add( this );
-        modal.add( body );
         
-        // add the other widgets
+        nameTextBox = new TextBox();
+        nameTextBox.setWidth("90%");
+        taskNameAnchor.add(nameTextBox);
+        
+        doneCheckBox = new CheckBox();
+        doneCheckBox.setText("Done");
+        taskDoneAnchor.add(doneCheckBox);
+        
         notesTextArea = new RichTextArea(); 
         notesTextArea.setHeight("200");
-        notesTextArea.setWidth("100%");
-        notesTextArea.setHTML("<b>Hello World!</b><br/>Uberfire is cool");
+        notesTextArea.setWidth("90%");
         taskNotesAnchor.add(notesTextArea);
         
         priorityListBox = new ListBox();
@@ -127,22 +146,61 @@ public class TaskEditorView extends Composite
     }
 
     @Override
-    public void show() {
-        modal.show();
-    }
-
-    @Override
-    public void hide() {
-        modal.hide();
+    public EditorTitle getTitleWidget() {
+        return title;
     }
 
     @EventHandler("ok-button")
     public void onOk( ClickEvent event ) {
+        presenter.save();
         presenter.close();
     }
 
     @EventHandler("cancel-button")
     public void onCancel( ClickEvent event ) {
-        presenter.close();
+        if (confirmClose())
+            presenter.close();
+    }
+
+    private boolean confirmClose() {
+        if (isDirty()) {
+            if (!Window.confirm(CommonConstants.INSTANCE.DiscardUnsavedData()))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void setContent(TaskWithNotes content) {
+        taskWithNotes = content;
+        nameTextBox.setText(taskWithNotes.getName());
+        doneCheckBox.setValue(taskWithNotes.isDone());
+        notesTextArea.setHTML(taskWithNotes.getNotes());
+        for (int index=0; index<priorityListBox.getItemCount(); ++index) {
+            int v = Integer.parseInt(priorityListBox.getValue(index));
+            if (v == taskWithNotes.getPriority()) {
+                priorityListBox.setSelectedIndex(index);
+                break;
+            }
+        }
+        dueDatePicker.setValue(taskWithNotes.getDueDate(), true);
+        dueDatePicker.setCurrentMonth(taskWithNotes.getDueDate());
+    }
+
+    @Override
+    public TaskWithNotes getContent() {
+        TaskWithNotes content = new TaskWithNotes(taskWithNotes);
+        content.setName(nameTextBox.getText());
+        content.setDone(doneCheckBox.getValue());
+        content.setNotes(notesTextArea.getHTML());
+        content.setPriority(Integer.parseInt(priorityListBox.getSelectedValue()));
+        content.setDueDate(dueDatePicker.getValue());
+        return content;
+    }
+
+    @Override
+    public boolean isDirty() {
+        // check if anything has changed
+        return !getContent().equals(taskWithNotes);
     }
 }

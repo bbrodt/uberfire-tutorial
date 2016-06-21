@@ -8,6 +8,7 @@ import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.backend.vfs.VFSService;
+import org.uberfire.component.model.Task;
 import org.uberfire.component.model.TasksRoot;
 import org.uberfire.component.service.UFTasksService;
 
@@ -40,5 +41,10 @@ public class UFTasksServiceImpl implements UFTasksService {
         if (path!=null)
             return path.getFileName();
         return null;
+    }
+
+    @Override
+    public String getFilePath(String userId, Task task) {
+        return DEFAULT_URI + "/" + userId + "/" + task.getId() + ".task";
     }
 }

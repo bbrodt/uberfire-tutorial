@@ -189,6 +189,12 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-commons</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-widgets-core-client</artifactId>
+    </dependency>
+
 <!-- End: Required for WorkbenchEditor sample code -->
 
     <dependency>
@@ -301,6 +307,14 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-client</compileSourcesArtifact>
+			<compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-table</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-service-api</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>
         <executions>
