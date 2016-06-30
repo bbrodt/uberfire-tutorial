@@ -167,14 +167,14 @@ public class ProjectsPresenter {
     }
 
     public void createNewProject(String projectName) {
-        tasksRoot.getProjects().add(new Project(projectName));
+        tasksRoot.getChildren().add(new Project(projectName));
         saveTasksRoot();
         updateView();
     }
 
     private void updateView() {
         view.clearProjects();
-        for (Project project : tasksRoot.getProjects()) {
+        for (Project project : tasksRoot.getChildren()) {
             view.addProject(project, project.isSelected());
         }
     }
@@ -186,7 +186,7 @@ public class ProjectsPresenter {
 
     private void setActiveProject(Project project) {
         activeProject = project;
-        for (Project p : tasksRoot.getProjects()) {
+        for (Project p : tasksRoot.getChildren()) {
             if (p == project) {
                 p.setSelected(true);
             }

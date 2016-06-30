@@ -64,7 +64,7 @@ public class DashboardPresenter {
 
     private void updateView() {
         view.clear();
-        for (Project project : tasksRoot.getProjects()) {
+        for (Project project : tasksRoot.getChildren()) {
             int done = project.countDoneTasks();
             int notDone = project.countTotalTasks() - done;
             view.addProject(project, notDone+"", done+"");

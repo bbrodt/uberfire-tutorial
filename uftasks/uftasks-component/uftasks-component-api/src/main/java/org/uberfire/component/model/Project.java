@@ -20,13 +20,12 @@ import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class Project extends TreeNode<TreeNode, Folder> {
+public class Project extends TreeNode<TasksRoot, Folder> {
 
     private final String name;
     private boolean selected;
 
     public Project(@MapsTo("name") String name) {
-        // this is the root of the tree so it has no parent
         this.name = name;
         this.selected = false;
     }
