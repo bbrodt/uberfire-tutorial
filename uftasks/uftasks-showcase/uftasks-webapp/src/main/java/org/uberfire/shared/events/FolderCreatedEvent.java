@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package org.uberfire.component.service;
+package org.uberfire.shared.events;
 
-import org.uberfire.component.model.MyModel;
-import org.jboss.errai.bus.server.annotations.Remote;
+import org.uberfire.component.model.Folder;
 
-@Remote
-public interface MyService {
+public class FolderCreatedEvent {
 
-    MyModel execute( final String param );
+    private final Folder folder;
 
+    public FolderCreatedEvent(Folder folder) {
+        this.folder = folder;
+    }
+
+    public Folder getFolder() {
+        return folder;
+    }
 }

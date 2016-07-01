@@ -19,12 +19,12 @@ package org.uberfire.shared.events;
 import org.uberfire.component.model.Folder;
 import org.uberfire.component.model.Task;
 
-public class TaskCreated {
+public class TaskCreatedEvent {
 
     private final Task task;
     private final Folder folder;
 
-    public TaskCreated(Folder folder, Task task) {
+    public TaskCreatedEvent(Folder folder, Task task) {
         this.folder = folder;
         this.task = task;
     }

@@ -17,22 +17,15 @@
 package org.uberfire.shared.events;
 
 import org.uberfire.component.model.Folder;
-import org.uberfire.component.model.Task;
 
-public class TaskDone {
+public class FolderRemovedEvent {
 
-    private final Task task;
     private final Folder folder;
 
-    public TaskDone(Folder folder, Task task) {
+    public FolderRemovedEvent(Folder folder) {
         this.folder = folder;
-       this.task = task;
     }
 
-    public Task getTask() {
-        return task;
-    }
-    
     public Folder getFolder() {
         return folder;
     }

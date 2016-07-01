@@ -38,7 +38,7 @@ import org.uberfire.component.model.TaskWithNotes;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
-import org.uberfire.shared.events.TaskChanged;
+import org.uberfire.shared.events.TaskChangedEvent;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.google.gwt.core.shared.GWT;
@@ -59,7 +59,7 @@ public class TaskEditorPresenter {
     private View view;
 
     @Inject
-    private Event<TaskChanged> taskChangedEvent;
+    private Event<TaskChangedEvent> taskChangedEvent;
 
     @Inject
     private Caller<VFSService> vfsServices;
@@ -152,7 +152,7 @@ public class TaskEditorPresenter {
             if (!taskWithNotes.getNotes().equals(changedTask.getNotes()))
                 saveTaskNotes(placeRequest.getPath(), changedTask.getNotes());
             if (!changedTask.asTask().equals(taskWithNotes.asTask()))
-                taskChangedEvent.fire(new TaskChanged(changedTask));
+                taskChangedEvent.fire(new TaskChangedEvent(changedTask));
         }
     }
     

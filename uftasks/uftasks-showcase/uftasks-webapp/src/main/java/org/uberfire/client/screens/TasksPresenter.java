@@ -40,12 +40,12 @@ import org.uberfire.component.model.Project;
 import org.uberfire.component.model.Task;
 import org.uberfire.component.service.UFTasksService;
 import org.uberfire.mvp.impl.PathPlaceRequest;
-import org.uberfire.shared.events.FolderCreated;
-import org.uberfire.shared.events.FolderRemoved;
+import org.uberfire.shared.events.FolderCreatedEvent;
+import org.uberfire.shared.events.FolderRemovedEvent;
 import org.uberfire.shared.events.ProjectSelectedEvent;
-import org.uberfire.shared.events.TaskChanged;
-import org.uberfire.shared.events.TaskCreated;
-import org.uberfire.shared.events.TaskDone;
+import org.uberfire.shared.events.TaskChangedEvent;
+import org.uberfire.shared.events.TaskCreatedEvent;
+import org.uberfire.shared.events.TaskDoneEvent;
 
 import com.google.gwt.core.client.GWT;
 
@@ -71,16 +71,16 @@ public class TasksPresenter {
     private TaskEditorPresenter taskEditorPresenter;
     
     @Inject
-    private Event<TaskCreated> taskCreatedEvent;
+    private Event<TaskCreatedEvent> taskCreatedEvent;
 
     @Inject
-    private Event<TaskDone> taskDoneEvent;
+    private Event<TaskDoneEvent> taskDoneEvent;
     
     @Inject
-    private Event<FolderCreated> folderCreatedEvent;
+    private Event<FolderCreatedEvent> folderCreatedEvent;
 
     @Inject
-    private Event<FolderRemoved> folderRemovedEvent;
+    private Event<FolderRemovedEvent> folderRemovedEvent;
 
     @Inject
     Caller<UFTasksService> ufTasksService;
@@ -133,26 +133,26 @@ public class TasksPresenter {
     }
 
     public void newFolder(String folderName) {
-        folderCreatedEvent.fire(new FolderCreated(new Folder(folderName)));
+        folderCreatedEvent.fire(new FolderCreatedEvent(new Folder(folderName)));
         updateView();
     }
 
     public void removeFolder(Folder folder) {
-        folderRemovedEvent.fire(new FolderRemoved(folder));
+        folderRemovedEvent.fire(new FolderRemovedEvent(folder));
         updateView();
     }
     
     public void doneTask(Task task) {
-        taskDoneEvent.fire(new TaskDone(task.getParent(), task));
+        taskDoneEvent.fire(new TaskDoneEvent(task.getParent(), task));
         updateView();
     }
 
     public void createTask(Folder folder, Task task) {
-        taskCreatedEvent.fire(new TaskCreated(folder, task));
+        taskCreatedEvent.fire(new TaskCreatedEvent(folder, task));
         updateView();
     }
 
-    public void taskChanged(@Observes TaskChanged taskChanged) {
+    public void taskChanged(@Observes TaskChangedEvent taskChanged) {
         task = taskChanged.getTask();
         updateView();
     }

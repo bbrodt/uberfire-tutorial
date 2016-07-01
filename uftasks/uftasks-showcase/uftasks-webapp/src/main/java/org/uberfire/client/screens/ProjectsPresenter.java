@@ -37,12 +37,12 @@ import org.uberfire.component.model.Project;
 import org.uberfire.component.model.Task;
 import org.uberfire.component.model.TasksRoot;
 import org.uberfire.component.service.UFTasksService;
-import org.uberfire.shared.events.FolderCreated;
-import org.uberfire.shared.events.FolderRemoved;
+import org.uberfire.shared.events.FolderCreatedEvent;
+import org.uberfire.shared.events.FolderRemovedEvent;
 import org.uberfire.shared.events.ProjectSelectedEvent;
-import org.uberfire.shared.events.TaskChanged;
-import org.uberfire.shared.events.TaskCreated;
-import org.uberfire.shared.events.TaskDone;
+import org.uberfire.shared.events.TaskChangedEvent;
+import org.uberfire.shared.events.TaskCreatedEvent;
+import org.uberfire.shared.events.TaskDoneEvent;
 
 import com.google.gwt.core.client.GWT;
 
@@ -119,7 +119,7 @@ public class ProjectsPresenter {
         }).save(tasksRoot, user.getIdentifier());
     }
     
-    public void taskCreated(@Observes TaskCreated taskCreated) {
+    public void taskCreated(@Observes TaskCreatedEvent taskCreated) {
         if (activeProject!=null) {
             Folder folder = taskCreated.getFolder();
             Task task = taskCreated.getTask();
@@ -129,14 +129,14 @@ public class ProjectsPresenter {
         }
     }
 
-    public void taskDone(@Observes TaskDone taskDone) {
+    public void taskDone(@Observes TaskDoneEvent taskDone) {
         Task task = taskDone.getTask();
         task.setDone(true);
         saveTasksRoot();
         updateView();
     }
 
-    public void taskChanged(@Observes TaskChanged taskChanged) {
+    public void taskChanged(@Observes TaskChangedEvent taskChanged) {
         Task changedTask = taskChanged.getTask();
         Task task = tasksRoot.getTask(changedTask.getId());
         if (task!=null) {
@@ -146,7 +146,7 @@ public class ProjectsPresenter {
         updateView();
     }
 
-    public void folderCreated(@Observes FolderCreated folderCreated) {
+    public void folderCreated(@Observes FolderCreatedEvent folderCreated) {
         if (activeProject!=null) {
             activeProject.addChild(folderCreated.getFolder());
             saveTasksRoot();
@@ -154,7 +154,7 @@ public class ProjectsPresenter {
         }
     }
 
-    public void folderRemoved(@Observes FolderRemoved folderRemoved) {
+    public void folderRemoved(@Observes FolderRemovedEvent folderRemoved) {
         if (activeProject!=null) {
             activeProject.removeChild(folderRemoved.getFolder());
             saveTasksRoot();
