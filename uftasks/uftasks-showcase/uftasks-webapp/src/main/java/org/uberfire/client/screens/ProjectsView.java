@@ -69,6 +69,11 @@ public class ProjectsView extends Composite implements ProjectsPresenter.View {
     }
 
     @Override
+    public void enableProjectCreation( boolean enabled ) {
+        newProject.setEnabled( enabled );
+    }
+
+    @Override
     public void addProject(final Project project, final boolean active) {
         final LinkedGroupItem projectItem = createProjectItem(project, active);
         projectsGroup.add(projectItem);

@@ -32,6 +32,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewProjectPresenter;
+import org.uberfire.security.annotations.ResourceCheck;
 import org.uberfire.component.model.Folder;
 import org.uberfire.component.model.Project;
 import org.uberfire.component.model.Task;
@@ -45,6 +46,8 @@ import org.uberfire.shared.events.TaskCreatedEvent;
 import org.uberfire.shared.events.TaskDoneEvent;
 
 import com.google.gwt.core.client.GWT;
+import static org.uberfire.shared.authz.ProjectConstants.*;
+import static org.uberfire.shared.authz.UFTasksControllerHelper.*;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "ProjectsPresenter")
@@ -53,6 +56,8 @@ public class ProjectsPresenter {
     public interface View extends UberView<ProjectsPresenter> {
 
         void clearProjects();
+
+        void enableProjectCreation(boolean enabled );
 
         void addProject(Project project, boolean selected);
     }
@@ -94,6 +99,12 @@ public class ProjectsPresenter {
 
     @PostConstruct
     public void init() {
+        view.enableProjectCreation( false );
+
+        // The Project security API can be used to check project creation permission
+        projects().create().granted( () -> {
+            view.enableProjectCreation( true );
+        } );
         loadTasksRoot();
     }
 
@@ -162,17 +173,29 @@ public class ProjectsPresenter {
         }
     }
     
+    public void onCreateGranted() {
+        //Project creation allowed
+    }
+
+    public void onCreateDenied() {
+       //Project creation NOT allowed
+    }
+
+    // Creation of projects is restricted
+    @ResourceCheck(type=PROJECT, action=CREATE, onGranted="onCreateGranted", onDenied="onCreateDenied")
     public void newProject() {
         newProjectPresenter.show(this);
     }
 
+    // Creation of projects is restricted
+    @ResourceCheck(type=PROJECT, action=CREATE, onGranted="onCreateGranted", onDenied="onCreateDenied")
     public void createNewProject(String projectName) {
         tasksRoot.getChildren().add(new Project(projectName));
         saveTasksRoot();
         updateView();
     }
 
-    private void updateView() {
+    protected void updateView() {
         view.clearProjects();
         for (Project project : tasksRoot.getChildren()) {
             view.addProject(project, project.isSelected());

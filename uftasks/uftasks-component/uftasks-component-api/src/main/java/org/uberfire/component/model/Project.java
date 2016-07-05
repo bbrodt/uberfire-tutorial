@@ -16,11 +16,15 @@
 
 package org.uberfire.component.model;
 
+import java.util.List;
+
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.security.Resource;
+import org.uberfire.security.ResourceType;
 
 @Portable
-public class Project extends TreeNode<TasksRoot, Folder> {
+public class Project extends TreeNode<TasksRoot, Folder> implements Resource {
 
     private final String name;
     private boolean selected;
@@ -36,6 +40,21 @@ public class Project extends TreeNode<TasksRoot, Folder> {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return name;
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return UTTasksResourceType.PROJECT;
+    }
+
+    @Override
+    public List<Resource> getDependencies() {
+        return null;
     }
 
     public void setSelected(boolean selected) {

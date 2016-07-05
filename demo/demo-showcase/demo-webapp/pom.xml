@@ -16,8 +16,6 @@
   <description>Demo WebApp</description>
 
   <properties>
-    <errai.version>${version.org.jboss.errai}</errai.version>
-    <as.version>8.1.0.Final</as.version>
     <version.org.wildfly.gwt.sdm>10.0.0.Final</version.org.wildfly.gwt.sdm>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
     <errai.jboss.home>${project.build.directory}/wildfly-${version.org.wildfly.gwt.sdm}</errai.jboss.home>
@@ -81,6 +79,11 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-security-client</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-security-codegen</artifactId>
     </dependency>
 
     <dependency>
@@ -344,6 +347,14 @@
               <directory>${basedir}</directory>
               <includes>
                 <include>src/main/webapp/org.uberfire.DemoShowcase/</include>
+                <include>src/main/webapp/WEB-INF/deploy/</include>
+                <include>src/main/webapp/WEB-INF/classes/</include>
+                <include>src/main/webapp/WEB-INF/lib/</include>
+                <include>**/gwt-unitCache/**</include>
+                <include>repositories/</include>
+                <include>.errai/</include>
+                <include>.niogit/**</include>
+                <include>.index/**</include>
               </includes>
             </fileset>
           </filesets>
