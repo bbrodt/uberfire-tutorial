@@ -139,7 +139,7 @@ public class TasksView extends Composite implements TasksPresenter.View {
     private ListGroupItem generateTask(Task task) {
         TaskItem taskItem = new TaskItem(task);
         taskItem.add(createTaskCheckbox(task));
-        taskItem.add(createTaskNotesButton(task));
+        taskItem.add(editTaskButton(task));
 
         return taskItem;
     }
@@ -153,7 +153,7 @@ public class TasksView extends Composite implements TasksPresenter.View {
         return checkBox;
     }
 
-    private Button createTaskNotesButton(Task task) {
+    private Button editTaskButton(Task task) {
         Button button = GWT.create(Button.class);
 //        button.setText("Notes...");
         button.setIcon(IconType.EDIT);

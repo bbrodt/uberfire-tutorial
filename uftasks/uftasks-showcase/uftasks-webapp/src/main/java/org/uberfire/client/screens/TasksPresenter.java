@@ -35,6 +35,7 @@ import org.uberfire.client.editors.TaskEditorPresenter;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.popup.NewFolderPresenter;
+import org.uberfire.client.screens.popup.NewTaskPresenter;
 import org.uberfire.component.model.Folder;
 import org.uberfire.component.model.Project;
 import org.uberfire.component.model.Task;
@@ -67,6 +68,9 @@ public class TasksPresenter {
     @Inject
     private NewFolderPresenter newFolderPresenter;
 
+    @Inject
+    private NewTaskPresenter newTaskPresenter;
+ 
     @Inject
     private TaskEditorPresenter taskEditorPresenter;
     
@@ -158,20 +162,21 @@ public class TasksPresenter {
     }
 
     public void showTaskEditor(final Task task) {
-        this.task = task;
-        ufTasksService.call(new RemoteCallback<String>() {
-            @Override
-            public void callback(final String response) {
-                if (response!=null) {
-                    String filename = response.replaceFirst(".*/", "");
-                    Path path = PathFactory.newPath(filename, response);
-                    placeRequest = new PathPlaceRequest(path);
-                    placeManager.goTo(placeRequest);
-                }
-                else 
-                    GWT.log("UFTasksService is unable to load tasks file");
-            }
-        }).getFilePath(user.getIdentifier(), task);
+        newTaskPresenter.show(this, task);
+//        this.task = task;
+//        ufTasksService.call(new RemoteCallback<String>() {
+//            @Override
+//            public void callback(final String response) {
+//                if (response!=null) {
+//                    String filename = response.replaceFirst(".*/", "");
+//                    Path path = PathFactory.newPath(filename, response);
+//                    placeRequest = new PathPlaceRequest(path);
+//                    placeManager.goTo(placeRequest);
+//                }
+//                else 
+//                    GWT.log("UFTasksService is unable to load tasks file");
+//            }
+//        }).getFilePath(user.getIdentifier(), task);
     }
     
     public PathPlaceRequest getPlaceRequest() {
