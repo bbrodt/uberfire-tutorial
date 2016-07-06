@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Anchor;

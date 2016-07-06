@@ -124,7 +124,7 @@ public class TaskEditorView extends Composite
         taskDoneAnchor.add(doneCheckBox);
         
         notesTextArea = new RichTextArea(); 
-        notesTextArea.setHeight("200");
+        notesTextArea.setHeight("80%");
         notesTextArea.setWidth("90%");
         taskNotesAnchor.add(notesTextArea);
         

@@ -76,6 +76,10 @@ public class Task extends TreeNode<Folder, TreeNode> {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Task) {

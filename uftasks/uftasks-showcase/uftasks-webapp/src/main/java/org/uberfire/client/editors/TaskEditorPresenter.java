@@ -34,6 +34,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.screens.TasksPresenter;
+import org.uberfire.component.model.Task;
 import org.uberfire.component.model.TaskWithNotes;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -42,6 +43,8 @@ import org.uberfire.shared.events.TaskChangedEvent;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.ui.IsWidget;
 
 @Dependent
@@ -80,8 +83,20 @@ public class TaskEditorPresenter {
     @OnStartup
     public void onStartup( final ObservablePath path,
                            final PlaceRequest place ) {
-        taskWithNotes = new TaskWithNotes(tasksPresenter.getTask());
-        placeRequest = tasksPresenter.getPlaceRequest();
+        placeRequest = (PathPlaceRequest) place;
+        // Create a Task object and populate it with
+        // the parameters passed in by the TasksPresenter 
+        Task task = new Task(place.getParameter("name", ""));
+        try {
+            task.setId(place.getParameter("id", ""));
+            task.setDueDate(
+                    DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)
+                    .parse(place.getParameter("dueDate", "")));
+            task.setPriority(Integer.parseInt(place.getParameter("priority", "")));
+        }
+        catch (Exception e) {
+        }
+        taskWithNotes = new TaskWithNotes(task);
         loadTaskNotes(path);
     }
     

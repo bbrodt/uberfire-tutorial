@@ -49,6 +49,8 @@ import org.uberfire.shared.events.TaskCreatedEvent;
 import org.uberfire.shared.events.TaskDoneEvent;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = "TasksPresenter")
@@ -96,10 +98,6 @@ public class TasksPresenter {
     private User user;
 
     private Project currentSelectedProject;
-    
-    private PathPlaceRequest placeRequest;
-    
-    private Task task;
     
     @WorkbenchPartTitle
     public String getTitle() {
@@ -157,34 +155,32 @@ public class TasksPresenter {
     }
 
     public void taskChanged(@Observes TaskChangedEvent taskChanged) {
-        task = taskChanged.getTask();
         updateView();
     }
 
     public void showTaskEditor(final Task task) {
-        newTaskPresenter.show(this, task);
-//        this.task = task;
-//        ufTasksService.call(new RemoteCallback<String>() {
-//            @Override
-//            public void callback(final String response) {
-//                if (response!=null) {
-//                    String filename = response.replaceFirst(".*/", "");
-//                    Path path = PathFactory.newPath(filename, response);
-//                    placeRequest = new PathPlaceRequest(path);
-//                    placeManager.goTo(placeRequest);
-//                }
-//                else 
-//                    GWT.log("UFTasksService is unable to load tasks file");
-//            }
-//        }).getFilePath(user.getIdentifier(), task);
-    }
-    
-    public PathPlaceRequest getPlaceRequest() {
-        return placeRequest;
-    }
-    
-    public Task getTask() {
-        return task;
+//        newTaskPresenter.show(this, task);
+        ufTasksService.call(new RemoteCallback<String>() {
+            @Override
+            public void callback(final String response) {
+                if (response!=null) {
+                    String filename = response.replaceFirst(".*/", "");
+                    Path path = PathFactory.newPath(filename, response);
+                    PathPlaceRequest place = new PathPlaceRequest(path);
+                    
+                    // add the Task fields to Place Request
+                    place.addParameter("id", task.getId());
+                    place.addParameter("name", task.getName());
+                    place.addParameter("dueDate",
+                            DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)
+                            .format(task.getDueDate()));
+                    place.addParameter("priority", ""+task.getPriority());
+                    placeManager.goTo(place);
+                }
+                else 
+                    GWT.log("UFTasksService is unable to load tasks file");
+            }
+        }).getFilePath(user.getIdentifier(), task);
     }
     
     public void closeTaskEditor(PathPlaceRequest placeRequest) {
